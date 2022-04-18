@@ -1,7 +1,7 @@
 import firebase_admin
 from firebase_admin import credentials,firestore
 import hardware as hw
-cred = credentials.Certificate("/Users/juzkiddin/Desktop/TKM/smartplugauth.json")
+cred = credentials.Certificate("Path_to_File/smartplugauth.json")
 firebase_admin.initialize_app(cred,{'storageBucket': 'farmhelptest2.appspot.com'})
 db=firestore.client()
 root_url = "http://192.168.10.9/"
