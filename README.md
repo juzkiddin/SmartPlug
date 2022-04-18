@@ -1,1 +1,3 @@
 # SmartPlug
+##Circuit Diagram
+----
