@@ -9,6 +9,12 @@ The diagram shows the connection that needs to be made to make the device work. 
 
 The NodeMCU needs to be be powered via the USB-Port for the device to work because the power for the current sensor and relay is taken from the VU pin which is the Voltage of the USB pin (5V). 
 
-Temperature sensor Data pin connect to D2 of NodeMCU
+*Temperature sensor Data pin connect to D2 of NodeMCU
+*Current Sensor Rx connects to D6 and Tx to D5
+*For Relays we use pins 
+..*D7 for Relay 1
+..*D0 for Relay 2
+..*D1 for Relay 3
+..*D3 for Relay 4
 
 
