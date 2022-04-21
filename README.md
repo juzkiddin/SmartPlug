@@ -97,3 +97,67 @@ uint8_t sensor1[8] = { 0x28, 0xAA, 0xB2, 0x12, 0x58, 0x14, 0x01, 0xA9  };
 WiFiServer server(80);
 ```
 * Setting up the NodeMCU as webserver so we can obtain and transmit data to it via its IP Address when connected to a WiFi Network
+
+```
+void setup() 
+{
+  pinMode(RELAY_ONE,OUTPUT);
+  digitalWrite(RELAY_ONE,HIGH);
+
+  pinMode(RELAY_TWO,OUTPUT);
+  digitalWrite(RELAY_TWO,HIGH);
+
+  pinMode(RELAY_THR,OUTPUT);
+  digitalWrite(RELAY_THR,HIGH);
+
+  pinMode(RELAY_FOU,OUTPUT);
+  digitalWrite(RELAY_FOU,HIGH);
+
+  ClientRequest = "";
+
+  Serial.begin(9600);
+  Serial.println();
+
+  WiFiManager wm;
+  wm.resetSettings();
+  bool res;
+  res=wm.autoConnect("Smart_Plug","smart@tkmplug");
+
+  if(!res){
+    Serial.println("Failed to Connect");
+  }
+
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("");
+  Serial.println("WiFi connected");
+
+  server.begin();
+  Serial.println("Server started");
+
+  // Print the IP address
+  Serial.println(WiFi.localIP());
+}
+
+```
+* The `setup()` function that is used to initialise the NodeMCU and set all the Relay pins as output. Then the next step is to initialise the WiFi of NodeMCU. Here we use the WifiManager Library. Once the NodeMCU is turned on the WiFiManager gets activated. 
+After you have uploaded the code open the serial monitor by pressing `CTRL+SHIFT+M` in the arduino window you would get a popup like this 
+
+![image](https://github.com/juzkiddin/SmartPlug/blob/main/Images/SerialMonitor1.png)
+
+Go to your mobile phone or laptop and open the WiFi settings there you can a WiFi nework named Smart_Plug, connect to it. The password is smart@tkmplug. You can change these properties in the code. Once connected to it sometimes a popup may automatically open, if not got to you browser (Remeber to turn off mobile data if you are using a mobile to perform this task) on the address bar type in `192.168.4.1` you would get a website like this.
+
+![Image](https://github.com/juzkiddin/SmartPlug/blob/main/Images/Wifim1.PNG)
+
+Click on `Configure WiFi` and select the WiFi you want to connect to type in the password and Click on Save . 
+
+![Image](https://github.com/juzkiddin/SmartPlug/blob/main/Images/Wifim2.PNG)
+
+By the mean time in the serial monitor in Arduino IDE uncheck `Autoscroll` and scroll up you coud see an IP Address like this 
+
+![image](https://github.com/juzkiddin/SmartPlug/blob/main/Images/SerialMonitor2.png)
+
+Copy this IP and save it somewhere.
