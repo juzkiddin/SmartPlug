@@ -24,11 +24,30 @@ Once downloaded and installed follow this step to add NodeMCU to Arduino IDE [Cl
 After that Install the necessary libraries that is required to compile the code.
 ### Steps
 * Click on tools
+
 ![Image](https://github.com/juzkiddin/SmartPlug/blob/main/Images/Tools.png)
+
 * Click on Manage Libraries
+
 ![Image](https://github.com/juzkiddin/SmartPlug/blob/main/Images/Manage%20Libraries.png)
+
 * Install All these Libraries
+
 ![Image](https://github.com/juzkiddin/SmartPlug/blob/main/Images/WifiManager.png)
 ![Image](https://github.com/juzkiddin/SmartPlug/blob/main/Images/Pzem.png)
 ![Image](https://github.com/juzkiddin/SmartPlug/blob/main/Images/OneWire.png)
 ![Image](https://github.com/juzkiddin/SmartPlug/blob/main/Images/DallasTemperature.png)
+
+## Code Explanation
+----
+The code is available in this Repository as TKM.ino
+
+* This is to import the necessary Libraries
+
+```
+#include <ESP8266WiFi.h>
+#include <WiFiManager.h>
+#include <PZEM004Tv30.h>
+#include <OneWire.h>
+#include <DallasTemperature.h>
+```
