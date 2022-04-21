@@ -284,7 +284,7 @@ void Safety_Check(){
   delay(100);
 }
 ```
-* This function checks for any safety failure such as Over Current, Over Voltage, Under Voltage and High temperature
+* This function checks for any safety failure such as Over Current, Over Voltage, Under Voltage and High temperature and turns of the relays if any one of the fault is detected. 
 
 ```
 void tx_Data(){
