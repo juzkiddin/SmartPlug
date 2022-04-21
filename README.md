@@ -148,7 +148,7 @@ After you have uploaded the code open the serial monitor by pressing `CTRL+SHIFT
 
 ![image](https://github.com/juzkiddin/SmartPlug/blob/main/Images/SerialMonitor1.png)
 
-Go to your mobile phone or laptop and open the WiFi settings there you can a WiFi nework named Smart_Plug, connect to it. The password is smart@tkmplug. You can change these properties in the code. Once connected to it sometimes a popup may automatically open, if not got to you browser (Remeber to turn off mobile data if you are using a mobile to perform this task) on the address bar type in `192.168.4.1` you would get a website like this.
+Go to your mobile phone or laptop and open the WiFi settings there you can a WiFi nework named `Smart_Plug`, connect to it. The password is `smart@tkmplug`. You can change these properties in the code. Once connected to it sometimes a popup may automatically open, if not go to you browser (Remeber to turn off mobile data if you are using a mobile to perform this task) on the address bar type in `192.168.4.1` you would get a website like this.
 
 ![Image](https://github.com/juzkiddin/SmartPlug/blob/main/Images/Wifim1.PNG)
 
@@ -161,3 +161,359 @@ By the mean time in the serial monitor in Arduino IDE uncheck `Autoscroll` and s
 ![image](https://github.com/juzkiddin/SmartPlug/blob/main/Images/SerialMonitor2.png)
 
 Copy this IP and save it somewhere.
+
+```
+void getData(){
+    voltage = pzem.voltage();
+    if( !isnan(voltage) ){
+        Serial.print("Voltage: "); Serial.print(voltage); Serial.println("V");
+    } else {
+        voltage = 0;
+        Serial.println("Error reading voltage");
+    }
+    current = pzem.current();
+    if( !isnan(current) ){
+        Serial.print("Current: "); Serial.print(current); Serial.println("A");
+    } else {
+        current = 0;
+        Serial.println("Error reading current");
+    }
+    power = pzem.power();
+    if( !isnan(power) ){
+        Serial.print("Power: "); Serial.print(power); Serial.println("W");
+    } else {
+        power = 0;
+        Serial.println("Error reading power");
+    }
+    energy = pzem.energy();
+    if( !isnan(energy) ){
+        Serial.print("Energy: "); Serial.print(energy,3); Serial.println("kWh");
+    } else {
+        energy = 0;
+        Serial.println("Error reading energy");
+    }
+    frequency = pzem.frequency();
+    if( !isnan(frequency) ){
+        Serial.print("Frequency: "); Serial.print(frequency, 1); Serial.println("Hz");
+    } else {
+        frequency = 0;
+        Serial.println("Error reading frequency");
+    }
+    pf = pzem.pf();
+    if( !isnan(pf) ){
+        Serial.print("PF: "); Serial.println(pf);
+    } else {
+        pf = 0;
+        Serial.println("Error reading power factor");
+    }
+    sensors.requestTemperatures();
+    temperature = sensors.getTempC(sensor1);
+    if(!isnan(temperature)){
+        Serial.print("Temperature: "); Serial.print(temperature); Serial.println("C");
+    } else {
+        temperature = 0;
+        Serial.println("Error reading temperature");
+    }
+}
+```
+* This function is used by the `tx_data()` function to obtain the data from the sensors for transmitting it.
+
+```
+void s_getData(){
+    voltage = pzem.voltage();
+    if( !isnan(voltage) ){
+        vflag=1;
+    } else {
+        voltage = 0;
+        vflag=0;
+    }
+    current = pzem.current();
+    if( !isnan(current) ){
+        cflag=1;
+    } else {
+        current = 0;
+        cflag=0;
+    }
+    sensors.requestTemperatures();
+    temperature = sensors.getTempC(sensor1);
+    if(!isnan(temperature)){
+        tflag=1;
+    } else {
+        temperature = 0;
+        tflag=0;
+    }
+}
+```
+* This function is used by the `Safety_Check()` function to get data from the sensors.
+
+```
+void Safety_Check(){
+    s_getData();
+  if(voltage>=S_Voltage){
+    Serial.println("1 T");
+    r1_off();
+    r2_off();
+    r3_off();
+    r4_off();
+  }
+  Serial.println(S_Voltage);
+  if(current>=S_Current){
+    Serial.println("2 T");
+    r1_off();
+    r2_off();
+    r3_off();
+    r4_off();
+  }
+  Serial.println(S_Current);
+  if((voltage<=Su_Voltage) && vflag==1){
+    Serial.println("3 T");
+    r1_off();
+    r2_off();
+    r3_off();
+    r4_off();
+  }
+  Serial.println(Su_Voltage);
+  if((temperature>=t_temperature) && tflag==1){
+    Serial.println("5 T");
+    r1_off();
+    r2_off();
+    r3_off();
+    r4_off();
+  }
+  Serial.println(t_temperature);
+  delay(100);
+}
+```
+* This function checks for any safety failure such as Over Current, Over Voltage, Under Voltage and High temperature
+
+```
+void tx_Data(){
+    tx_data = "";
+    getData();
+    tx_data += "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n";
+    tx_data += String(voltage);
+    tx_data += " ";
+    tx_data += String(current);
+    tx_data += " ";
+    tx_data += String(power);
+    tx_data += " ";
+    tx_data += String(energy);
+    tx_data += " ";
+    tx_data += String(frequency);
+    tx_data += " ";
+    tx_data += String(pf);
+    tx_data += " ";
+    tx_data += String(temperature);
+}
+```
+* This function packs the data into HTML text format so that it can be transmitted via the webserver.
+
+```
+void r1_on(){
+  digitalWrite(RELAY_ONE,LOW);
+}
+void r1_off(){
+  digitalWrite(RELAY_ONE,HIGH);
+}
+
+void r2_on(){
+  digitalWrite(RELAY_TWO,LOW);
+}
+void r2_off(){
+  digitalWrite(RELAY_TWO,HIGH);
+}
+
+void r3_on(){
+  digitalWrite(RELAY_THR,LOW);
+}
+void r3_off(){
+  digitalWrite(RELAY_THR,HIGH);
+}
+
+void r4_on(){
+  digitalWrite(RELAY_FOU,LOW);
+}
+void r4_off(){
+  digitalWrite(RELAY_FOU,HIGH);
+}
+```
+* This is a set of functions that turn the relays on and off.
+
+```
+void loop(){
+    Safety_Check();
+    WiFiClient client = server.available();
+    if (!client)
+    {
+        return;
+    }
+    ClientRequest = (client.readStringUntil('\r'));
+    ClientRequest.remove(0, 5);
+    ClientRequest.remove(ClientRequest.length()-9,9);
+    Serial.println("Request");
+    Serial.println(ClientRequest);
+    if(ClientRequest=="data"){
+        tx_Data();
+        client.println(tx_data);
+        } 
+    else{
+        if(ClientRequest=="r1on"){
+            r1_on();
+            client.println("HTTP/1.1 200 OK");
+            client.println("Content-Type: text/html");
+            client.println("");
+            client.println("<!DOCTYPE HTML>");
+            client.println("<html>");
+            client.println("Relay ON");
+            client.println("</html>");
+        }
+        else{
+            if(ClientRequest=="r1of"){
+                r1_off();
+                client.println("HTTP/1.1 200 OK");
+                client.println("Content-Type: text/html");
+                client.println("");
+                client.println("<!DOCTYPE HTML>");
+                client.println("<html>");
+                client.println("Relay OFF");
+                client.println("</html>");
+
+            }
+            else{
+                if(ClientRequest.substring(0,2)=="v_"){
+                    S_Voltage = ClientRequest.substring(2).toFloat();
+                    client.println("HTTP/1.1 200 OK");
+                    client.println("Content-Type: text/html");
+                    client.println("");
+                    client.println("<!DOCTYPE HTML>");
+                    client.println("<html>");
+                    client.println("Voltage Value Updated");
+                    client.println("</html>");
+                }
+                else{
+                    if(ClientRequest.substring(0,2)=="c_"){
+                        S_Current = ClientRequest.substring(2).toFloat();
+                        client.println("HTTP/1.1 200 OK");
+                        client.println("Content-Type: text/html");
+                        client.println("");
+                        client.println("<!DOCTYPE HTML>");
+                        client.println("<html>");
+                        client.println("Current Value Updated");
+                        client.println("</html>");
+                    }
+                    else{
+                        if(ClientRequest.substring(0,3)=="vu_"){
+                            Su_Voltage = ClientRequest.substring(3).toFloat();
+                            client.println("HTTP/1.1 200 OK");
+                            client.println("Content-Type: text/html");
+                            client.println("");
+                            client.println("<!DOCTYPE HTML>");
+                            client.println("<html>");
+                            client.println("Under Voltage Value Updated");
+                            client.println("</html>");
+                        }
+                        else{
+                            if(ClientRequest.substring(0,2)=="t_"){
+                                t_temperature = ClientRequest.substring(2).toFloat();
+                                client.println("HTTP/1.1 200 OK");
+                                client.println("Content-Type: text/html");
+                                client.println("");
+                                client.println("<!DOCTYPE HTML>");
+                                client.println("<html>");
+                                client.println("Temperature Threshold Value Updated");
+                                client.println("</html>");
+                            }
+                            else{
+                                if(ClientRequest=="r2on"){
+                                    r2_on();
+                                    client.println("HTTP/1.1 200 OK");
+                                    client.println("Content-Type: text/html");
+                                    client.println("");
+                                    client.println("<!DOCTYPE HTML>");
+                                    client.println("<html>");
+                                    client.println("Relay ON");
+                                    client.println("</html>");
+                                }
+                                else{
+                                    if(ClientRequest=="r2of"){
+                                        r2_off();
+                                        client.println("HTTP/1.1 200 OK");
+                                        client.println("Content-Type: text/html");
+                                        client.println("");
+                                        client.println("<!DOCTYPE HTML>");
+                                        client.println("<html>");
+                                        client.println("Relay OFF");
+                                        client.println("</html>");
+                        
+                                    }
+                                    else{
+                                        if(ClientRequest=="r3on"){
+                                            r3_on();
+                                            client.println("HTTP/1.1 200 OK");
+                                            client.println("Content-Type: text/html");
+                                            client.println("");
+                                            client.println("<!DOCTYPE HTML>");
+                                            client.println("<html>");
+                                            client.println("Relay ON");
+                                            client.println("</html>");
+                                        }
+                                        else{
+                                            if(ClientRequest=="r3of"){
+                                                r3_off();
+                                                client.println("HTTP/1.1 200 OK");
+                                                client.println("Content-Type: text/html");
+                                                client.println("");
+                                                client.println("<!DOCTYPE HTML>");
+                                                client.println("<html>");
+                                                client.println("Relay OFF");
+                                                client.println("</html>");
+                                
+                                            }
+                                            else{
+                                                if(ClientRequest=="r4on"){
+                                                    r4_on();
+                                                    client.println("HTTP/1.1 200 OK");
+                                                    client.println("Content-Type: text/html");
+                                                    client.println("");
+                                                    client.println("<!DOCTYPE HTML>");
+                                                    client.println("<html>");
+                                                    client.println("Relay ON");
+                                                    client.println("</html>");
+                                                }
+                                                else{
+                                                    if(ClientRequest=="r4of"){
+                                                        r4_off();
+                                                        client.println("HTTP/1.1 200 OK");
+                                                        client.println("Content-Type: text/html");
+                                                        client.println("");
+                                                        client.println("<!DOCTYPE HTML>");
+                                                        client.println("<html>");
+                                                        client.println("Relay OFF");
+                                                        client.println("</html>");
+                                        
+                                                    }
+                                                    else{
+                                                        client.println("HTTP/1.1 200 OK");
+                                                        client.println("Content-Type: text/html");
+                                                        client.println("");
+                                                        client.println("<!DOCTYPE HTML>");
+                                                        client.println("<html>");
+                                                        client.println(ClientRequest.substring(2));
+                                                        client.println("</html>");
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    delay(100);
+}
+```
+* This is the `loop()` function that continously runs
