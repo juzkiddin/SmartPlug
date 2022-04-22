@@ -72,4 +72,3 @@ while(True):
     volt,curr,pow,ene,freq,pf,temp = hw.get_data(root_url)
     update(volt,curr,pow,ene,freq,pf,temp)
     safety()
-update(0.00,0.00,0.00,0.00,0.00,0.00,0.00)
