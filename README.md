@@ -7,9 +7,9 @@ The diagram shows the connection that needs to be made to make the device work. 
 
 ![Image](https://github.com/juzkiddin/SmartPlug/blob/main/Images/Screenshot%202022-04-18%20at%2012.44.17%20PM.png)
 
-The NodeMCU needs to be be powered via the USB-Port for the device to work because the power for the current sensor and relay is taken from the VU pin which is the Voltage of the USB pin (5V). 
+The NodeMCU needs to be powered via the USB Port for the device to work because the power for the current sensor and relay is taken from the VU pin which is the Voltage of the USB pin (5V).
 
-* Temperature sensor Data pin connect to D2 of NodeMCU
+* Temperature sensor Data pin connects to D2 of NodeMCU
 * Current Sensor Rx connects to D6 and Tx to D5
 * For Relays we use pins 
    * D7 for Relay 1
@@ -20,8 +20,9 @@ The NodeMCU needs to be be powered via the USB-Port for the device to work becau
 ## Setting Up Arduino
 ----
 Download Arduino and Install it from [here](https://www.arduino.cc/en/software)
-Once downloaded and installed follow this step to add NodeMCU to Arduino IDE [Click Here!](https://www.instructables.com/Steps-to-Setup-Arduino-IDE-for-NODEMCU-ESP8266-WiF/)
+Once installed follow this step to add NodeMCU to Arduino IDE [Click Here!](https://www.instructables.com/Steps-to-Setup-Arduino-IDE-for-NODEMCU-ESP8266-WiF/)
 After that Install the necessary libraries that is required to compile the code.
+
 ### Steps
 * Click on tools
 
@@ -91,12 +92,12 @@ int tflag = 0;
 
 uint8_t sensor1[8] = { 0x28, 0xAA, 0xB2, 0x12, 0x58, 0x14, 0x01, 0xA9  };
 ```
-* Here we are declaring the necessary variable that is required. Most of it is self explanatory. Thing to note is `S_Current` refers to Safety upper limit of current for over current protection. `S_Voltage` refers to Safety upper limit of voltage for over voltage protection. `Su_Voltage` refers to Safety lower limit of voltage for under voltage protection. `t_temperature` refers to Safety upper temperature limit of voltage for high temperature protection. Sensor variable is the address of temperature sensor.
+* Here we are declaring the necessary variable that is required. Most of it is self-explanatory. The thing to note is that `S_Current` refers to the Safety upper limit of current for overcurrent protection. `S_Voltage` refers to the Safety upper limit of voltage for overvoltage protection. `Su_Voltage` refers to a Safety lower limit of voltage for under-voltage protection. and `t_temperature` refers to the Safety upper-temperature limit of voltage for high-temperature protection. The sensor variable is the address of the temperature sensor.
 
 ```
 WiFiServer server(80);
 ```
-* Setting up the NodeMCU as webserver so we can obtain and transmit data to it via its IP Address when connected to a WiFi Network
+* Setting up the NodeMCU as a web server so we can obtain and transmit data to it via its IP Address when connected to a WiFi Network
 
 ```
 void setup() 
@@ -143,8 +144,8 @@ void setup()
 }
 
 ```
-* The `setup()` function that is used to initialise the NodeMCU and set all the Relay pins as output. Then the next step is to initialise the WiFi of NodeMCU. Here we use the WifiManager Library. Once the NodeMCU is turned on the WiFiManager gets activated. 
-After you have uploaded the code open the serial monitor by pressing `CTRL+SHIFT+M` in the arduino window you would get a popup like this 
+* The `setup()` function is used to initialise the NodeMCU and set all the Relay pins as output. Then the next step is to initialise the WiFi of NodeMCU. Here we use the WifiManager Library. Once the NodeMCU is turned on the WiFiManager gets activated. 
+After you have uploaded the code open the serial monitor by pressing `CTRL+SHIFT+M` in the Arduino window you would get a popup like this 
 
 ![image](https://github.com/juzkiddin/SmartPlug/blob/main/Images/SerialMonitor1.png)
 
@@ -516,7 +517,7 @@ void loop(){
     delay(100);
 }
 ```
-* This is the `loop()` function that continously runs once the NodeMCU is connected to the WiFi Network. It first calls the `Safety_Check()` function to check for fault detection. After that based on the request from the client it performs the necessary tasks. The request from client will be in this format. Remeber the IP that you copied from the Serial Monitor. IP may or may not be in the form of `19.168.x.x`
+* This is the `loop()` function that continuously runs once the NodeMCU is connected to the WiFi Network. It first calls the `Safety_Check()` function to check for fault detection. After that based on the request from the client, it performs the necessary tasks. The request from the client will be in this format. Remember the IP that you copied from the Serial Monitor. IP may or may not be in the form of `19.168.x.x`
    * `192.168.x.x/data` returns the all the data from the `tx_data()` function
    * `192.168.x.x/rxon` turns the 'x'th relay on using the `rx_on()` function
    * `192.168.x.x/rxof` turns the 'x'th relay off using the `rx_off()` function
@@ -527,10 +528,10 @@ void loop(){
 
 ## Backend Code
 
-Because we cannot directy update value from the hardware to the cloud because we are not use any third party MQTT services such as Blynk or Cayenne we need a way to somehow update this data to the cloud and visualise it in a mobile application and also control the devices via the cloud.
-For this we use the PFF approach (Python-Firebase-Flutter). 
+Because we cannot directly update value from the hardware to the cloud as we do not use any third-party MQTT services such as Blynk or Cayenne, we need a way to somehow update this data to the cloud and visualise it in a mobile application and also control the devices via the cloud.
+For this, we use the PFF approach (Python-Firebase-Flutter). 
 
-A python script acts as our communication framework. It fetches the data from the hardware system and updates it to the cloud. By 'cloud' we mean a database where all the data is stored and fetched from, for this purpose we use Firebase Firestore database which is a real time database provided by google. For the mobile application we use the Flutter framework that work flawlessly with Firestore database and also enable us to create cross-platform applications with ease.
+A python script acts as our communication backend. It fetches the data from the hardware system and updates it to the cloud. By 'cloud' we mean a database where all the data is stored and fetched from, for this purpose we use Firebase Firestore database which is a real time database provided by Google. For the mobile application we use the Flutter framework that work flawlessly with Firestore database and also enable us to create cross-platform applications with ease.
 
 ## Firebase
 ----
@@ -545,14 +546,14 @@ It stores all the realtime data that is updated from the hardware
 ![Image](https://github.com/juzkiddin/SmartPlug/blob/main/Images/Firebase_Data.png)
 
 ### Relay
-It stores the state of the a particular relay.
-If `relay_x` is `false` it means that particular relay is turned off and `true` means it is turned on.
+It stores the state of the particular relay.
+If `relay_x` is `false` it means that a particular relay is turned off and `true` means it is turned on.
 `r_flag` is a check variable used in the python script that will be explained later.
 ![Image](https://github.com/juzkiddin/SmartPlug/blob/main/Images/Firebase_Relay.png)
 
 ### Variables
 It stores all the safety parameters of that can be updated via the mobile app.
-The `flag` is anothe check variable used by the python script that will be explained later
+The `flag` is another check variable used by the python script that will be explained later
 ![Image](https://github.com/juzkiddin/SmartPlug/blob/main/Images/Firebase_Safety.png)
 
 
@@ -564,10 +565,10 @@ The `flag` is anothe check variable used by the python script that will be expla
 `pip install firebase_admin`
 * Install Visual Studio Code(VSC) ([Click Here](https://www.youtube.com/watch?v=9o4gDQvVkLU)) by following the steps.
 * Download this [file](https://github.com/juzkiddin/SmartPlug/archive/refs/heads/main.zip) and extract it.
-* Open VSC and click on `File` from the Top-Bar. Click on `Open Folder` select the extracted folder.
+* Open VSC and click on `File` from the Top Bar. Click on `Open Folder` and select the extracted folder.
 * On the left panel click on `FirebaseMainSmartPlug.py`
-* Update the `root_url` in the code to the IP address you recieve from the serial monitor. Remember both the hardware and the computer in which this program is run needs to be connected to the same WiFi network.
-* Change only the IP address part in the code i.e. `https:/xxx.xxx.xxx.xxx/` only the 'x' needs to be change the rest should not be changed
+* Update the `root_url` in the code to the IP address you received from the serial monitor. Remember both the hardware and the computer in which this program is run needs to be connected to the same WiFi network.
+* Change only the IP address part in the code i.e. `https:/xxx.xxx.xxx.xxx/` only the 'x' needs to be changed the rest should not be changed
 * Run the program only after starting the NodeMCU and connecting it to the WiFi otherwise it may result in an error.
 
 ### Explanation
@@ -615,7 +616,7 @@ import firebase_admin
 from firebase_admin import credentials,firestore
 import hardware as hw
 ```
-Here we imported the `firebase_admin` library that we installed using `pip`. This library enables us to connect to the firestore database from the python code.
+Here we import the `firebase_admin` library that we installed using `pip`. This library enables us to connect to the firestore database from the python code.
 Then we are importing the hardware.py that we discussed before to connect to NodeMCU to read and write data from the hardware.
 
 ```python
@@ -675,7 +676,7 @@ This is the `safety()` function. The safety conditions are checked on a hardware
         relay4 = relay_r.get('relay4')
         r_flag = relay_r.get('r_flag')
 ```
-On the `update()` function we update data to the firebase database. Here we are reading data from firebase database and extracting it to perform functions.
+On the `update()` function we update data *to* the firebase database. Here we are reading data *from* firebase database and extracting it to perform functions.
 `result` variable stores the data from the `Variables` field in the Firestore Database.
 `relay_r` variable stores the data from the `Relay` field in the Firestore Database.
 `result_data` variable stores the data from the `Data` field in the Firestore Database.
@@ -755,6 +756,7 @@ Once the button is turned off it sets the `relay_x` to `"false"` and the `r_flag
 The use of `r_flag` is, It acts as a check and  executes the OFF section of the python code only if the user turns of any one of the relay.
 Without this check each relay will be turned off for every execution of the Python code which wastes time and affects performance.
 Since the Python Code runs infinitely untill it stops this without this `r_flag` check there will be a huge wastage of time and preformance.
+It set the `r_flag` variable is set to `"false"` once it is executed
 
 ```python
 while(True):
