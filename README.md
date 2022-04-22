@@ -700,3 +700,73 @@ Click on the `Set Limits` buttion it opens up a screen where you can adjust the 
 ![Image](https://github.com/juzkiddin/SmartPlug/blob/main/Images/Set_M_2.png)
 
 When the `Set Values` button is clicked it updates the new safety values to the firebase database and also sets the `flag `as `"true"`. This executes the python block above and updates the values to the nodemcu.
+
+```python
+        if((float(result_data.get('voltage'))>=result.get('Su_voltage'))and(float(result_data.get('voltage'))<=result.get('s_voltage'))and(float(result_data.get('current'))<=result.get('s_current'))and(float(result_data.get('temperature'))<=result.get('T_temperature'))):
+            if(relay1=="true"):
+                hw.trigger_data(root_url+"r1on")
+                print("on 1")
+            if(relay2=="true"):
+                hw.trigger_data(root_url+"r2on")
+                print("on 2")
+            if(relay3=="true"):
+                hw.trigger_data(root_url+"r3on")
+                print("on 3")
+            if(relay4=="true"):
+                hw.trigger_data(root_url+"r4on")
+                print("on 4")
+```
+This block of the code check the safety parameters is met i.e Over Voltage, Under Voltage, Over Current and High Temperature conditions as set by the user is checked.
+If the check passes i.e. no fault is detected it checks whether the `relay_x` variable in the relay section of the firebase is set to `"true"`. If so it uses the trigger function to turn on the x_th relay.
+The `relay_x` variable is set to `"true"` by the Mobile app when the user turns on a plug.
+
+![Image](https://github.com/juzkiddin/SmartPlug/blob/main/Images/M_ON.png)
+
+When this button is clicked it sets the valure of `relay_x` in the firebase firestore database to `"true"`
+  * Plug 1 corresponds to `relay_1`
+  * Plug 2 corresponds to `relay_2`
+  * Plug 3 corresponds to `relay_3`
+  * Plug 4 corresponds to `relay_4`
+If the safety conditions are met the python code executes the particular block of the code that turns on that relay at the hardware level.
+
+```python
+      if(r_flag=="true"):
+            if(relay1=="false"):
+                hw.trigger_data(root_url+"r1of")
+                print("off 1")
+            if(relay2=="false"):
+                hw.trigger_data(root_url+"r2of")
+                print("off 2")
+            if(relay3=="false"):
+                hw.trigger_data(root_url+"r3of")
+                print("off 3")
+            if(relay4=="false"):
+                hw.trigger_data(root_url+"r4of")
+                print("off 4")
+            db.collection('smart_plug').document('relay').update({'r_flag':"false"})
+```
+This block of the code is turn off the relay when the used presses the OFF button in the Mobile Application. 
+
+![Image](https://github.com/juzkiddin/SmartPlug/blob/main/Images/M_OFF.png)
+
+Once the button is turned off it sets the `relay_x` to `"false"` and the `r_flag` to `"true"`. 
+`r_flag` is turned to `"true"` when any of the plug is turned off.
+`relay_x` is changed to `"false"` when `Plug X` is turned off.
+The use of `r_flag` is, It acts as a check and  executes the OFF section of the python code only if the user turns of any one of the relay.
+Without this check each relay will be turned off for every execution of the Python code which wastes time and affects performance.
+Since the Python Code runs infinitely untill it stops this without this `r_flag` check there will be a huge wastage of time and preformance.
+
+```python
+while(True):
+    volt,curr,pow,ene,freq,pf,temp = hw.get_data(root_url)
+    update(volt,curr,pow,ene,freq,pf,temp)
+    safety()
+```
+This runs the python code in a infinte loop updating the data from the nodemcu to the firebase firestore database and executing the `safety()` function infinitely.
+
+## Mobile Application
+
+The mobile app is built using flutter and the application is attached in this repository and also can be found in the extracted folder under the name `Mobile_App.apk` Install it in an Android Device and run it.
+
+The source code for the App is [here](https://github.com/abhijithmh/Smart_Plug.git)
+
