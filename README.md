@@ -642,9 +642,13 @@ def update(volt,curr,pow,ene,freq,pf,temp):
     print("updated")
 ```
 This function updates the data obtained from the NodeMCU to the `data` section under each subsection to the firebase firestore database. And from there it is fetched by the Mobile Application and shown to the user.
+
 ![Image](https://github.com/juzkiddin/SmartPlug/blob/main/Images/Data_M_1.png)
+
 ![Image](https://github.com/juzkiddin/SmartPlug/blob/main/Images/Data_M_2.png)
+
 ![Image](https://github.com/juzkiddin/SmartPlug/blob/main/Images/Data_M_3.png)
+
 ![Image](https://github.com/juzkiddin/SmartPlug/blob/main/Images/Data_M_4.png)
 
 ```python
@@ -688,7 +692,11 @@ if(flag=="true"):
             print("safety_updated")
 ```
 This block of the code updates the safety parameters to NodeMCU only if the `flag` variable is `"true"` and set the `flag` variable is set to `"false"` once it is executed. The `flag` variable is set to `"true"` by the mobile app when the `Set Values` button in the `Set Limits` section in clicked
+
 ![Image](https://github.com/juzkiddin/SmartPlug/blob/main/Images/Set_M_1.png)
+
 Click on the `Set Limits` buttion it opens up a screen where you can adjust the safety parameters.
+
 ![Image](https://github.com/juzkiddin/SmartPlug/blob/main/Images/Set_M_2.png)
+
 When the `Set Values` button is clicked it updates the new safety values to the firebase database and also sets the `flag `as `"true"`. This executes the python block above and updates the values to the nodemcu.
