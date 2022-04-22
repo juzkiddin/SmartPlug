@@ -556,3 +556,25 @@ The `flag` is anothe check variable used by the python script that will be expla
 ![Image](https://github.com/juzkiddin/SmartPlug/blob/main/Images/Firebase_Safety.png)
 
 
+## Python
+----
+
+* First step is to install Python and `pip` [click here](https://www.youtube.com/watch?v=dYfKJMPNMDw) and follow the steps.
+* After that open the `Command Prompt` and type 
+`pip install firebase_admin`
+* Install Visual Studio Code(VSC) ([Click Here](https://www.youtube.com/watch?v=9o4gDQvVkLU)) by following the steps.
+* Download this [file](https://github.com/juzkiddin/SmartPlug/archive/refs/heads/main.zip) and extract it.
+* Open VSC and click on `File` from the Top-Bar. Click on `Open Folder` select the extracted folder.
+* On the left panel click on `FirebaseMainSmartPlug.py`
+* Update the `root_url` in the code to the IP address you recieve from the serial monitor. Remember both the hardware and the computer in which this program is run needs to be connected to the same WiFi network.
+* Change only the IP address part in the code i.e. `https:/xxx.xxx.xxx.xxx/` only the 'x' needs to be change the rest should not be changed
+* Run the program only after starting the NodeMCU and connecting it to the WiFi otherwise it may result in an error.
+
+### Explanation
+
+__hardware.py__
+
+```python
+import urllib.request
+```
+This imports the `urllib.request` library that allows us to connect and read data from the webserver.
