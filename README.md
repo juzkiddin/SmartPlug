@@ -610,3 +610,85 @@ __FirebaseMainSmartPlug.py__
 
 This is the main program that you run in order to update data from the NodeMCU to Firebase Firestore Database and vice versa.
 
+```python
+import firebase_admin
+from firebase_admin import credentials,firestore
+import hardware as hw
+```
+Here we imported the `firebase_admin` library that we installed using `pip`. This library enables us to connect to the firestore database from the python code.
+Then we are importing the hardware.py that we discussed before to connect to NodeMCU to read and write data from the hardware.
+
+```python
+cred = credentials.Certificate("smartplugauth.json")
+firebase_admin.initialize_app(cred,{'storageBucket': 'farmhelptest2.appspot.com'})
+db=firestore.client()
+```
+Here we are initialising the parameters to allow the python code to connnect to our database. All the credentials required for the connection is stored in in the `smartplugauth.json` file which is present in the extracted folder.
+
+```python
+root_url = "http://192.xxx.xxx.xxx/"
+```
+This is the IP address of the NodeMCU that you obtain from the Serial Monitor. Change this according to your IP. Note only change the 'x' don't change anything else including the `'/'`.
+
+```python
+def update(volt,curr,pow,ene,freq,pf,temp):
+    db.collection('smart_plug').document('data').update({'voltage':str(volt)})
+    db.collection('smart_plug').document('data').update({'current':str(curr)})
+    db.collection('smart_plug').document('data').update({'power':str(pow)})
+    db.collection('smart_plug').document('data').update({'energy':str(ene)})
+    db.collection('smart_plug').document('data').update({'frequency':str(freq)})
+    db.collection('smart_plug').document('data').update({'pf':str(pf)})
+    db.collection('smart_plug').document('data').update({'temperature':str(temp)})
+    print("updated")
+```
+This function updates the data obtained from the NodeMCU to the `data` section under each subsection to the firebase firestore database. And from there it is fetched by the Mobile Application and shown to the user.
+![Image](https://github.com/juzkiddin/SmartPlug/blob/main/Images/Data_M_1.png)
+![Image](https://github.com/juzkiddin/SmartPlug/blob/main/Images/Data_M_2.png)
+![Image](https://github.com/juzkiddin/SmartPlug/blob/main/Images/Data_M_3.png)
+![Image](https://github.com/juzkiddin/SmartPlug/blob/main/Images/Data_M_4.png)
+
+```python
+def safety():
+```
+This is the `safety()` function. The safety conditions are checked on a hardware level inside the NodeMCU for fast response and at a software level in this python script for added safety. This functions also updates the safety parameters set from the app directly to the NodeMCU.
+
+```python
+    result=db.collection('smart_plug').document('variables').get()
+    relay_r = db.collection('smart_plug').document('relay').get()
+    result_data = db.collection('smart_plug').document('data').get()
+     if (result.exists and relay_r.exists and result_data.exists):
+        result=result.to_dict()
+        relay_r=relay_r.to_dict()
+        result_data = result_data.to_dict()
+        s_voltage = result.get('s_voltage')
+        s_current = result.get('s_current')
+        su_voltage = result.get('Su_voltage')
+        t_temp = result.get('T_temperature')
+        flag = result.get('flag')
+        relay1 = relay_r.get('relay1')
+        relay2 = relay_r.get('relay2')
+        relay3 = relay_r.get('relay3')
+        relay4 = relay_r.get('relay4')
+        r_flag = relay_r.get('r_flag')
+```
+On the `update()` function we update data to the firebase database. Here we are reading data from firebase database and extracting it to perform functions.
+`result` variable stores the data from the `Variables` field in the Firestore Database.
+`relay_r` variable stores the data from the `Relay` field in the Firestore Database.
+`result_data` variable stores the data from the `Data` field in the Firestore Database.
+
+`flag` and `r_flag` are the check variable that is used by this python scripts for certain functions.
+
+```python
+if(flag=="true"):
+            hw.trigger_data(root_url+"v_"+str(s_voltage))
+            hw.trigger_data(root_url+"c_"+str(s_current))
+            hw.trigger_data(root_url+"vu_"+str(su_voltage))
+            hw.trigger_data(root_url+"t_"+str(t_temp))
+            db.collection('smart_plug').document('variables').update({'flag':'false'})
+            print("safety_updated")
+```
+This block of the code updates the safety parameters to NodeMCU only if the `flag` variable is `"true"` and set the `flag` variable is set to `"false"` once it is executed. The `flag` variable is set to `"true"` by the mobile app when the `Set Values` button in the `Set Limits` section in clicked
+![Image](https://github.com/juzkiddin/SmartPlug/blob/main/Images/Set_M_1.png)
+Click on the `Set Limits` buttion it opens up a screen where you can adjust the safety parameters.
+![Image](https://github.com/juzkiddin/SmartPlug/blob/main/Images/Set_M_2.png)
+When the `Set Values` button is clicked it updates the new safety values to the firebase database and also sets the `flag `as `"true"`. This executes the python block above and updates the values to the nodemcu.
