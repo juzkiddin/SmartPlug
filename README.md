@@ -524,3 +524,35 @@ void loop(){
    * `192.168.x.x/c_x` where 'x' is a float or integer value sets the safety upper current limit as 'x'
    * `192.168.x.x/vu_x` where 'x' is a float or integer value sets the safety lower voltage limit as 'x'
    * `192.168.x.x/t_x` where 'x' is a float or integer value sets the safety upper temperature limit as 'x'
+
+## Backend Code
+
+Because we cannot directy update value from the hardware to the cloud because we are not use any third party MQTT services such as Blynk or Cayenne we need a way to somehow update this data to the cloud and visualise it in a mobile application and also control the devices via the cloud.
+For this we use the PFF approach (Python-Firebase-Flutter). 
+
+A python script acts as our communication framework. It fetches the data from the hardware system and updates it to the cloud. By 'cloud' we mean a database where all the data is stored and fetched from, for this purpose we use Firebase Firestore database which is a real time database provided by google. For the mobile application we use the Flutter framework that work flawlessly with Firestore database and also enable us to create cross-platform applications with ease.
+
+## Firebase
+----
+* Open the firebase console by [clicking here](https://firebase.google.com/?gclsrc=ds&gclsrc=ds)
+* Click on `Sign In` and use the given credentials to Log In to the account after that click on `Go to Console`
+* After that click on `Firestore Database` on the left panel.
+* You can see a screen like this.
+![Image](https://github.com/juzkiddin/SmartPlug/blob/main/Images/Firebase.png)
+
+### Data
+It stores all the realtime data that is updated from the hardware
+![Image](https://github.com/juzkiddin/SmartPlug/blob/main/Images/Firebase_Data.png)
+
+### Relay
+It stores the state of the a particular relay.
+If `relay_x` is `false` it means that particular relay is turned off and `true` means it is turned off.
+`r_flag` is a check variable used in the python script that will be explained later.
+![Image](https://github.com/juzkiddin/SmartPlug/blob/main/Images/Firebase_Relay.png)
+
+### Variables
+It stores all the safety parameters of that can be updated via the mobile app.
+The `flag` is anothe check variable used by the python script that will be explained later
+![Image](https://github.com/juzkiddin/SmartPlug/blob/main/Images/Firebase_Safety.png)
+
+
