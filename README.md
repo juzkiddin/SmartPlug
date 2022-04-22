@@ -573,8 +573,40 @@ The `flag` is anothe check variable used by the python script that will be expla
 ### Explanation
 
 __hardware.py__
+----
+
+This is just a function to connect to the NodeMCU and not the main program. The main program is `FirebaseMainSmartPlug.py`. This file can be found in the same extracted folder.
 
 ```python
 import urllib.request
 ```
 This imports the `urllib.request` library that allows us to connect and read data from the webserver.
+
+```python
+def get_data(url):
+    data = urllib.request.urlopen(url+"data").read()
+    data = data.decode("utf-8")
+    adata = data.split()
+    volt = float(adata[0])
+    curr = float(adata[1])
+    pow = float(adata[2])
+    ene = float(adata[3])
+    freq = float(adata[4])
+    pf = float(adata[5])
+    temp = float(adata[6])
+    return volt,curr,pow,ene,freq,pf,temp
+```
+This function is used to get the data from the NodeMCU by accessing the `url` which is passed from the main program. It converts the data from HTML Text to float variabled and returns each data as its individual component.
+
+```python
+def trigger_data(url):
+    urllib.request.urlopen(url)
+    return 0
+```
+This funtion is used to pass data from the main program to the NodeMCU for turning the relays ON/OFF or for updating the Safety Values.
+
+__FirebaseMainSmartPlug.py__
+----
+
+This is the main program that you run in order to update data from the NodeMCU to Firebase Firestore Database and vice versa.
+
