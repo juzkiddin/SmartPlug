@@ -546,7 +546,7 @@ It stores all the realtime data that is updated from the hardware
 
 ### Relay
 It stores the state of the a particular relay.
-If `relay_x` is `false` it means that particular relay is turned off and `true` means it is turned off.
+If `relay_x` is `false` it means that particular relay is turned off and `true` means it is turned on.
 `r_flag` is a check variable used in the python script that will be explained later.
 ![Image](https://github.com/juzkiddin/SmartPlug/blob/main/Images/Firebase_Relay.png)
 
