@@ -516,4 +516,11 @@ void loop(){
     delay(100);
 }
 ```
-* This is the `loop()` function that continously runs
+* This is the `loop()` function that continously runs once the NodeMCU is connected to the WiFi Network. It first calls the `Safety_Check()` function to check for fault detection. After that based on the request from the client it performs the necessary tasks. The request from client will be in this format. Remeber the IP that you copied from the Serial Monitor. IP may or may not be in the form of `19.168.x.x`
+   * `192.168.x.x/data` returns the all the data from the `tx_data()` function
+   * `192.168.x.x/rxon` turns the 'x'th relay on using the `rx_on()` function
+   * `192.168.x.x/rxof` turns the 'x'th relay off using the `rx_off()` function
+   * `192.168.x.x/v_x` where 'x' is a float or integer value sets the safety upper voltage limit as 'x'
+   * `192.168.x.x/c_x` where 'x' is a float or integer value sets the safety upper current limit as 'x'
+   * `192.168.x.x/vu_x` where 'x' is a float or integer value sets the safety lower voltage limit as 'x'
+   * `192.168.x.x/t_x` where 'x' is a float or integer value sets the safety upper temperature limit as 'x'
